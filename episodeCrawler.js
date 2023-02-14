@@ -1,8 +1,6 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
 import fs, { appendFileSync } from 'fs';
-import csv from 'async-csv'
-import { get } from 'http';
 
 const urlList = [];
 
@@ -13,23 +11,27 @@ const getPostTitles = async ( pageNumber ) => {
 		);
 
         const $ = cheerio.load(data);
-		const postTitles = []
-        let pageUrl = ""
-        let episodeTitle = ""
+		const episodeTitles = []
+        const episodeUrls = []
+        const episodeData = []
 
 		$('a.br-blocklink__link').each((_idx, el) => {
-			pageUrl = $(el).attr('href')
-		});
+            let pageUrl = $(el).attr('href')
+            episodeUrls.push(pageUrl)
+		})
 
         $('span.programme__title.gamma').each((_idx, el) => {
             let exDashes = $(el).text().replace(/\s+/g, '-').toLowerCase()
-            episodeTitle = exDashes.replace(/['‘’"“”]/g, '')
-		});
+            let episodeTitle = exDashes.replace(/['‘’"“”]/g, '')
+            episodeTitles.push(episodeTitle)
+        })
+               
+        for (const [index, url] of episodeUrls.entries()) {
+            const episodeTitle = episodeTitles[index]
+            episodeData.push([episodeTitle, url])
+        }
 
-  
-
-        postTitles.push([episodeTitle, pageUrl])
-		return postTitles;
+		return episodeData;
 
 	} catch (error) {
 		throw error;
@@ -62,21 +64,22 @@ for ( let i = 1; i < 6; i++ ) {
 
 const bigLoop = async () => {
 
+    const postList = []
+
     for (const pageNum of pageNums) {
 
         const postTitles = await getPostTitles(pageNum)
 
-        postTitles.forEach(title => {
-            urlList.push(title)
+        console.log(`Processed page ${pageNum}`)   
+        
+        postTitles.forEach(entry => {
+            postList.push(entry)
         })
 
-        console.log(`Processed page ${pageNum}`)    
-
-        await writeToFile("./pages.csv", urlList);
-
-        console.log(`Episode count: ${urlList.length}`)
-
     }
+
+    await writeToFile("./pages.csv", postList);
+    console.log(`Episode count: ${postList.length}`)
 
 }
 

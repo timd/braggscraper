@@ -1,6 +1,4 @@
-import axios from'axios'
-import cheerio from 'cheerio'
-import fs, { read } from 'fs'
+import fs from 'fs'
 import csv from 'async-csv'
 import download from 'image-downloader'
 
@@ -10,19 +8,18 @@ const bigLoop = async (files) => {
 
         if (file[1] != 'undefined') {
 
-            const filename = extractFilename(file[1])
+            const filename = extractFilename(file[2])
             const dest = `../../mp3s/${file[0]}-${filename}`
 
             const options = {
-                url: file[1],
+                url: file[2],
                 dest: dest,
                 extractFilename: false,
             };
 
             try {
                 console.log(`Downloading ${dest}...`)
-                const result = await download.image(options)
-                console.log(result)
+                await download.image(options)
             } catch (err) {
                 console.log(err)
             }
@@ -53,7 +50,6 @@ const readCsv = async () => {
 
 const run = async () => {
     const files = await readCsv()
-    console.log(files)
     bigLoop(files)
 }
 

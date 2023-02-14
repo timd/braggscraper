@@ -6,6 +6,7 @@
     "cross-blob": "^3.0.2",
     "csv": "^6.2.7",
     "image-downloader": "^4.3.0",
+    "mp3tag.js": "^3.3.2",
     "pretty": "^2.0.0"
   },
   "type": "module"
