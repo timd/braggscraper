@@ -10,18 +10,13 @@ const getMp3Data = async ( url ) => {
 
         const $ = cheerio.load(data);
 		const mp3Links = [];
-        let synopsis = ""
 
 		$('a.link-complex').each((_idx, el) => {
 			const mp3Url = $(el).attr('href')
 			mp3Links.push(`https:${mp3Url}`)
 		});
 
-        $('div.synopsis-toggle__short p').each((_idx, el) => {
-			synopsis = $(el).text()
-		});
-
-        return [synopsis, mp3Links[0]];
+        return mp3Links;
 
 	} catch (error) {
 		throw error;
@@ -38,10 +33,10 @@ const clearFile = async (filename) => {
     }
 }
 
-const writeToFile = async (filename, title, synopsis, mp3Url) => {
+const writeToFile = async (filename, title, mp3Url) => {
 
         try {
-            await appendFileSync(filename, `${title}|${synopsis}|${mp3Url}\n`)
+            await appendFileSync(filename, `${title}|${mp3Url}\n`)
         } catch (err) {
             console.log(err)
         }
@@ -54,14 +49,12 @@ const bigLoop = async (pagesList) => {
 
         const mp3data = await getMp3Data(pageRecord[1])
         const title = pageRecord[0]
-        const url = mp3data[1]
-        const synopsis = mp3data[0]
+        const url = mp3data[0]
 
         console.log(`title: ${title}`)
-        console.log(`synopsis: ${synopsis}`)
-        console.log(`url: ${url}`)
+        console.log(`url: ${url}\n`)
 
-        await writeToFile("./mp3s.csv", title, synopsis, url);
+        await writeToFile("./mp3s.csv", title, url);
 
     }
     

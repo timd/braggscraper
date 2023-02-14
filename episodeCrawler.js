@@ -2,7 +2,8 @@ import axios from 'axios';
 import cheerio from 'cheerio';
 import fs, { appendFileSync } from 'fs';
 
-const urlList = [];
+const startPage = 1
+const endPage = 10
 
 const getPostTitles = async ( pageNumber ) => {
 	try {
@@ -23,7 +24,8 @@ const getPostTitles = async ( pageNumber ) => {
         $('span.programme__title.gamma').each((_idx, el) => {
             let exDashes = $(el).text().replace(/\s+/g, '-').toLowerCase()
             let episodeTitle = exDashes.replace(/['‘’"“”]/g, '')
-            episodeTitles.push(episodeTitle)
+            let cleanTitle = exDashes.replace(/[,]/g, '-')
+            episodeTitles.push(cleanTitle)
         })
                
         for (const [index, url] of episodeUrls.entries()) {
@@ -58,7 +60,7 @@ const writeToFile = async (filename, urlJson) => {
 };
 
 const pageNums = []
-for ( let i = 1; i < 6; i++ ) {
+for ( let i = startPage; i < endPage + 1; i++ ) {
     pageNums.push(i)
 }
 

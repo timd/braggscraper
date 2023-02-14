@@ -5,11 +5,7 @@ import download from 'image-downloader'
 const downloadedCount = 0
 let counter = 1
 
-const bigLoop = async (files) => {
-
-    for (const file of files) {
-        
-        let target = files.length
+const bigLoop = async (file) => {
 
         if (file[1] != 'undefined') {
 
@@ -23,7 +19,7 @@ const bigLoop = async (files) => {
             };
 
             try {
-                console.log(`Downloading #${counter} of ${target} - ${filename} to ${dest}...`)
+                console.log(`Downloading #${counter} - ${filename} to ${dest}...`)
                 await download.image(options)
                 counter += 1
             } catch (err) {
@@ -34,7 +30,6 @@ const bigLoop = async (files) => {
 
     }    
 
-}
 
 const extractFilename = (filename) => {
     return filename.split('/').slice(-1)[0]
@@ -64,7 +59,11 @@ const run = async () => {
 
     const filesToProcess = removeDownloaded(files)
 
-    bigLoop(filesToProcess)
+    for (const fileToProcess of filesToProcess) {
+        await bigLoop(fileToProcess)
+    }
+
+    //bigLoop(filesToProcess)
 }
 
 run()
